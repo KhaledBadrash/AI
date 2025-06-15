@@ -3,54 +3,46 @@
 import json
 import pika
 from his.config import (
-    RABBITMQ_HOST,
-    EXCHANGE_NAME,
-    ROUTING_KEY_PEREGOS,
-    ROUTING_KEY_WYSEFLOW,
-    HARD_CODED_PROGRAMS
+    RABBITMQ_HOST, EXCHANGE_NAME,
+    ROUTING_KEY_PEREGOS, ROUTING_KEY_WYSEFLOW
 )
-from utils.validation import validate_program, validate_id
 
-def send_student_data(name, matrikelnummer, program):
-    # 1. Validierung der Eingabe
-    if not name or not matrikelnummer or not program:
-        raise ValueError("Alle Felder müssen ausgefüllt sein.")
-    if not validate_id(matrikelnummer):
-        raise ValueError("Ungültige Matrikelnummer.")
-    if not validate_program(program, HARD_CODED_PROGRAMS):
-        raise ValueError(f"Studiengang '{program}' nicht verfügbar.")
+def send_student_data(name: str, student_id: str,
+                      program: str, modules: list):
+    """
+    Publish two messages:
+      1) to Peregos: name, id, program, modules
+      2) to WyseFlow: includes start_date & total_credits
+    """
+    conn = pika.BlockingConnection(pika.ConnectionParameters(RABBITMQ_HOST))
+    ch   = conn.channel()
+    ch.exchange_declare(exchange=EXCHANGE_NAME, exchange_type='direct')
 
-    # 2. Verbindung zu RabbitMQ aufbauen
-    connection = pika.BlockingConnection(
-        pika.ConnectionParameters(RABBITMQ_HOST)
-    )
-    channel = connection.channel()
-    channel.exchange_declare(exchange=EXCHANGE_NAME, exchange_type='direct')
-
-    # 3. Nachricht für Peregos (Name, ID, Programm)
-    base_msg = {
-        "name":    name,
-        "id":      matrikelnummer,
-        "program": program
+    base = {
+        "name": name,
+        "id":   student_id,
+        "program": program,
+        "modules": modules
     }
-    channel.basic_publish(
+
+    # Peregos
+    ch.basic_publish(
         exchange=EXCHANGE_NAME,
         routing_key=ROUTING_KEY_PEREGOS,
-        body=json.dumps(base_msg)
+        body=json.dumps(base)
     )
 
-    # 4. Nachricht für WyseFlow (Basis + Startdatum + Credits)
+    # WyseFlow
+    from his.config import HARD_CODED_PROGRAMS
     details = HARD_CODED_PROGRAMS[program]
-    wf_msg = {
-        **base_msg,
-        "start_date": details["start_date"],
-        "credits":    details["credits"]
-    }
-    channel.basic_publish(
+    wf = dict(base)
+    wf["start_date"]    = details["start_date"]
+    wf["total_credits"] = details["credits"]
+
+    ch.basic_publish(
         exchange=EXCHANGE_NAME,
         routing_key=ROUTING_KEY_WYSEFLOW,
-        body=json.dumps(wf_msg)
+        body=json.dumps(wf)
     )
 
-    # 5. Verbindung schließen
-    connection.close()
+    conn.close()

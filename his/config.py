@@ -1,198 +1,197 @@
 # his/config.py
 
-# Hostname RabbitMQ-Servers (lokal)
+# RabbitMQ server host (local)
 RABBITMQ_HOST = 'localhost'
 
-# Name des Direct-Exchange
+# Direct exchange name
 EXCHANGE_NAME = 'student_data_exchange'
 
-# Routing Keys für die beiden Consumer
+# Routing keys for each consumer
 ROUTING_KEY_PEREGOS  = 'peregos'
 ROUTING_KEY_WYSEFLOW = 'wyseflow'
 
-# Hart codierte Studiengänge mit ihrem Startdatum, Gesamt-Credits und Modulen
-# Jedes Modul hat einen Namen und eine CP-Angabe
+# Hard-coded programs with start date, total credits and modules
+# Each module has a name and credit points
 HARD_CODED_PROGRAMS = {
-    'Informatik': {
+    'Computer Science': {
         'start_date': '2023-10-01',
         'credits':    120,
         'modules': [
-            # 1. Semester
-            {'name': 'Algebra',                                      'credits': 5},
-            {'name': 'Analysis',                                     'credits': 5},
-            {'name': 'Einführung in die Informatik',                 'credits': 5},
-            {'name': 'Programmierung in C & OO-Grundlagen',          'credits': 15},
-            {'name': 'English bzw. BWL (Wahl)',                      'credits': 5},
+            # 1st semester
+            {'name': 'Algebra',                 'credits': 5},
+            {'name': 'Analysis',                'credits': 5},
+            {'name': 'Intro to Computer Science','credits': 5},
+            {'name': 'C & OO Basics',           'credits': 15},
+            {'name': 'Elective (Eng/Biz)',      'credits': 5},
 
-            # 2. Semester
-            {'name': 'Diskrete Mathematik',                          'credits': 5},
-            {'name': 'Rechnerarchitekturen',                         'credits': 5},
-            {'name': 'Algorithmen und Datenstrukturen',              'credits': 5},
-            {'name': 'Theoretische Informatik, Automaten & Sprachen','credits': 5},
-            {'name': 'English bzw. BWL (Wahl)',                      'credits': 5},
+            # 2nd semester
+            {'name': 'Discrete Mathematics',    'credits': 5},
+            {'name': 'Computer Architecture',   'credits': 5},
+            {'name': 'Algorithms & Data Struct','credits': 5},
+            {'name': 'Theory of Computation',   'credits': 5},
+            {'name': 'Elective (Eng/Biz II)',   'credits': 5},
 
-            # 3. Semester
-            {'name': 'Software Engineering – Analysis',              'credits': 5},
-            {'name': 'Statistics',                                   'credits': 5},
-            {'name': 'OOP in Java – Advanced Course',                'credits': 5},
-            {'name': 'Databases',                                    'credits': 5},
-            {'name': 'Computer Networks (CN)',                       'credits': 5},
-            {'name': 'Operating Systems',                            'credits': 5},
+            # 3rd semester
+            {'name': 'SW Engineering – Analysis','credits': 5},
+            {'name': 'Statistics',              'credits': 5},
+            {'name': 'OOP in Java',             'credits': 5},
+            {'name': 'Databases',               'credits': 5},
+            {'name': 'Computer Networks',       'credits': 5},
+            {'name': 'Operating Systems',       'credits': 5},
 
-            # 4. Semester
-            {'name': 'Software Engineering – Design',                'credits': 5},
-            {'name': 'Real-Time Systems',                            'credits': 5},
-            {'name': 'IT Security',                                  'credits': 5},
-            {'name': 'Distributed Systems',                          'credits': 5},
-            {'name': 'Practical Computer Networks & Applications',   'credits': 5},
-            {'name': 'Programming Exercises',                        'credits': 5},
+            # 4th semester
+            {'name': 'SW Engineering – Design', 'credits': 5},
+            {'name': 'Real-Time Systems',       'credits': 5},
+            {'name': 'IT Security',             'credits': 5},
+            {'name': 'Distributed Systems',     'credits': 5},
+            {'name': 'Networks Lab',            'credits': 5},
+            {'name': 'Programming Exercises',   'credits': 5},
 
-            # 5. Semester
-            {'name': 'Recht und Datenschutz',                        'credits': 5},
-            {'name': 'Aktuelle Themen der Informatik',               'credits': 5},
-            {'name': 'Informatik Projekt',                           'credits': 10},
-            {'name': 'Wahlpflichtmodul',                             'credits': 5},
-            {'name': 'Interdisziplinäres Studium Generale',          'credits': 5},
+            # 5th semester
+            {'name': 'Law & Data Protection',   'credits': 5},
+            {'name': 'Current CS Topics',       'credits': 5},
+            {'name': 'CS Project',              'credits': 10},
+            {'name': 'Elective Module',         'credits': 5},
+            {'name': 'Interdisciplinary Studies','credits': 5},
 
-            # 6. Semester
-            {'name': 'Praxisphase',                                  'credits': 18},
-            {'name': 'Bachelor-Arbeit mit Kolloquium',               'credits': 12},
+            # 6th semester
+            {'name': 'Industry Placement',      'credits': 18},
+            {'name': 'Bachelor Thesis + Viva',  'credits': 12},
         ]
     },
 
-    'Wirtschaftsinformatik': {
-        'start_date': '2024-02-10',
-        'credits':    180,  # Summe aller BIS-Module
-        'modules': [
-            # Angelehnt an das Business Information Systems – Beispiel
-            # 1. Semester
-            {'name': 'Algebra',                  'credits': 5},
-            {'name': 'Accounting',               'credits': 5},
-            {'name': 'Business Administration',  'credits': 5},
-            {'name': 'Business Information Sys.', 'credits': 5},
-            {'name': 'OOP',                      'credits': 10},
-
-            # 2. Semester
-            {'name': 'Study Skills',             'credits': 5},
-            {'name': 'OBS & Networks',            'credits': 5},
-            {'name': 'Databases',                'credits': 5},
-            {'name': 'Private Commercial Law',   'credits': 5},
-            {'name': 'Business English',         'credits': 5},
-            {'name': 'Analysis',                 'credits': 5},
-
-            # 3. Semester
-            {'name': 'Statistics',               'credits': 5},
-            {'name': 'Web-based App Systems',    'credits': 5},
-            {'name': 'Business Process Mgmt.',   'credits': 5},
-            {'name': 'Data Privacy & Internet',  'credits': 5},
-            {'name': 'Logistics & Productions',  'credits': 5},
-            {'name': 'Software Engineering',     'credits': 5},
-
-            # 4. Semester
-            {'name': 'Architecture & Integration','credits': 5},
-            {'name': 'Seminar Information Sys.', 'credits': 5},
-            {'name': 'Data Warehousing',         'credits': 5},
-            {'name': 'Digital Business & E-Commerce','credits': 5},
-            {'name': 'ERP',                      'credits': 5},
-            {'name': 'IS Project Mgmt.',         'credits': 5},
-
-            # 5. Semester
-            {'name': 'IT Security',              'credits': 5},
-            {'name': 'Usability Engineering',    'credits': 5},
-            {'name': 'Elective Module',          'credits': 5},
-            {'name': 'General Academic Studies', 'credits': 5},
-            {'name': 'Corp. Inf. Sys. Modelling','credits': 5},
-            {'name': 'IS-Management',            'credits': 5},
-
-            # 6. Semester
-            {'name': 'Practical Training',       'credits': 30},
-
-            # 7. Semester
-            {'name': 'Project',                  'credits': 18},
-            {'name': 'Bachelor Thesis',          'credits': 12},
-        ]
-    },
-
-    'BWL': {
-        'start_date': '2024-10-01',
-        'credits':    210,
-        'modules': [
-            # 1. Semester
-            {'name': 'Einführung BWL & HRM',     'credits': 5},
-            {'name': 'Rechnungswesen I',         'credits': 5},
-            {'name': 'Wirtschaftsprivatrecht I', 'credits': 5},
-            {'name': 'Wirtschaftsinformatik I',  'credits': 5},
-            {'name': 'Wirtschaftsmathematik I',  'credits': 5},
-            {'name': 'Schlüsselkompetenzen',     'credits': 5},
-
-            # 2. Semester
-            {'name': 'Finanzierung & Investition','credits': 5},
-            {'name': 'Rechnungswesen II',        'credits': 5},
-            {'name': 'Wirtschaftsprivatrecht II','credits': 5},
-            {'name': 'Wirtschaftsstatistik',     'credits': 5},
-            {'name': 'Wirtschaftsmathematik II', 'credits': 5},
-            {'name': 'Mikroökonomik',           'credits': 5},
-
-            # 3. Semester
-            {'name': 'Marketing & Produktion',   'credits': 5},
-            {'name': 'Rechnungswesen III',       'credits': 5},
-            {'name': 'Betriebliche Steuerlehre', 'credits': 5},
-            {'name': 'Makroökonomik',            'credits': 5},
-            {'name': 'Wirtschaftsinformatik II', 'credits': 5},
-            {'name': 'Studium Generale',         'credits': 5},
-
-            # 4. Semester (Schwerpunkt & Wahlpflicht)
-            {'name': 'SP1 Modul1',               'credits': 10},
-            {'name': 'SP2 Modul1',               'credits': 10},
-            {'name': 'WPM 1',                    'credits': 5},
-            {'name': 'WPM 2',                    'credits': 5},
-
-            # 5. Semester
-            {'name': 'SP1 Modul2',               'credits': 10},
-            {'name': 'SP2 Modul2',               'credits': 10},
-            {'name': 'WPM 3',                    'credits': 5},
-            {'name': 'WPM 4',                    'credits': 5},
-
-            # 6. Semester
-            {'name': 'Praxis­modul',             'credits': 30},
-
-            # 7. Semester
-            {'name': 'SP1 Modul3',               'credits': 10},
-            {'name': 'SP2 Modul3',               'credits': 10},
-            {'name': 'Bachelor-Arbeit + Kolloq.', 'credits': 10},
-        ]
-    },
-
-    'Soziale Arbeit': {
+    'Business Information Systems': {
         'start_date': '2024-02-10',
         'credits':    180,
         'modules': [
-            # 1. / 2. Semester
-            {'name': 'Grundlagenmodul Pers. & Ges.',        'credits': 10},
-            {'name': 'Grundlagenmodul Recht',               'credits': 10},
-            {'name': 'Grundlagenmodul Ges., Ökonomie',      'credits': 10},
-            {'name': 'Wissenschaftliches Arbeiten',         'credits': 5},
+            # 1st semester
+            {'name': 'Algebra',                 'credits': 5},
+            {'name': 'Accounting',              'credits': 5},
+            {'name': 'Business Administration', 'credits': 5},
+            {'name': 'Intro to BIS',            'credits': 5},
+            {'name': 'OOP Basics',              'credits': 10},
 
-            # 3. / 4. Semester
-            {'name': 'Konzeptionelles Vertiefungsmodul',    'credits': 10},
-            {'name': 'Interdisziplinäre Fallarbeit',        'credits': 5},
-            {'name': 'Aufbaumodul Recht',                   'credits': 5},
-            {'name': 'Aufbaumodul Pers. & Ges.',            'credits': 5},
-            {'name': 'Aufbaumodul Ges., Ökonomie',          'credits': 5},
-            {'name': 'Methoden & Konzepte',                 'credits': 10},
-            {'name': 'Organisation & Finanzierung',         'credits': 5},
+            # 2nd semester
+            {'name': 'Study Skills',            'credits': 5},
+            {'name': 'OS & Networks',           'credits': 5},
+            {'name': 'Databases',               'credits': 5},
+            {'name': 'Commercial Law',          'credits': 5},
+            {'name': 'Business English',        'credits': 5},
+            {'name': 'Analysis',                'credits': 5},
 
-            # 5. Semester
-            {'name': 'Schwerpunktmodul Praxisvorbereitung', 'credits': 5},
-            {'name': 'Schwerpunktmodul Praxisphase',        'credits': 20},
+            # 3rd semester
+            {'name': 'Statistics',              'credits': 5},
+            {'name': 'Web-App Systems',         'credits': 5},
+            {'name': 'Process Mgmt.',           'credits': 5},
+            {'name': 'Privacy & Internet Law',  'credits': 5},
+            {'name': 'Logistics & Production',  'credits': 5},
+            {'name': 'SW Engineering',          'credits': 5},
 
-            # 6. / 7. Semester
-            {'name': 'Diversität & Inklusion I',            'credits': 10},
-            {'name': 'Diversität & Inklusion II',           'credits': 10},
-            {'name': 'Studium Generale',                    'credits': 5},
-            {'name': 'Vertiefung',                          'credits': 20},
-            {'name': 'Projektorientierte Arbeiten',         'credits': 5},
-            {'name': 'Bachelor-Thesis + Kolloq.',            'credits': 10},
+            # 4th semester
+            {'name': 'Architecture & Integration','credits': 5},
+            {'name': 'BIS Seminar',             'credits': 5},
+            {'name': 'Data Warehousing',        'credits': 5},
+            {'name': 'Digital Business',        'credits': 5},
+            {'name': 'ERP Systems',             'credits': 5},
+            {'name': 'Project Mgmt.',           'credits': 5},
+
+            # 5th semester
+            {'name': 'IT Security',             'credits': 5},
+            {'name': 'Usability Engineering',   'credits': 5},
+            {'name': 'Elective Module',         'credits': 5},
+            {'name': 'General Academic Studies','credits': 5},
+            {'name': 'BIS Modelling',           'credits': 5},
+            {'name': 'IS Management',           'credits': 5},
+
+            # 6th semester
+            {'name': 'Practical Training',      'credits': 30},
+
+            # 7th semester
+            {'name': 'Project',                 'credits': 18},
+            {'name': 'Bachelor Thesis',         'credits': 12},
+        ]
+    },
+
+    'Business Administration': {
+        'start_date': '2024-10-01',
+        'credits':    210,
+        'modules': [
+            # 1st semester
+            {'name': 'Intro to BA & HRM',      'credits': 5},
+            {'name': 'Accounting I',            'credits': 5},
+            {'name': 'Private Law I',           'credits': 5},
+            {'name': 'Business Info I',         'credits': 5},
+            {'name': 'Math for Econ I',         'credits': 5},
+            {'name': 'Core Skills',             'credits': 5},
+
+            # 2nd semester
+            {'name': 'Finance & Investment',    'credits': 5},
+            {'name': 'Accounting II',           'credits': 5},
+            {'name': 'Private Law II',          'credits': 5},
+            {'name': 'Econ Statistics',         'credits': 5},
+            {'name': 'Math for Econ II',        'credits': 5},
+            {'name': 'Microeconomics',          'credits': 5},
+
+            # 3rd semester
+            {'name': 'Marketing & Production',  'credits': 5},
+            {'name': 'Accounting III',          'credits': 5},
+            {'name': 'Corporate Taxation',      'credits': 5},
+            {'name': 'Macroeconomics',          'credits': 5},
+            {'name': 'Business Info II',        'credits': 5},
+            {'name': 'Generale Studies',        'credits': 5},
+
+            # 4th semester
+            {'name': 'Major Elective 1',        'credits': 10},
+            {'name': 'Major Elective 2',        'credits': 10},
+            {'name': 'Minor Elective 1',        'credits': 5},
+            {'name': 'Minor Elective 2',        'credits': 5},
+
+            # 5th semester
+            {'name': 'Major Elective 3',        'credits': 10},
+            {'name': 'Major Elective 4',        'credits': 10},
+            {'name': 'Minor Elective 3',        'credits': 5},
+            {'name': 'Minor Elective 4',        'credits': 5},
+
+            # 6th semester
+            {'name': 'Practical Module',        'credits': 30},
+
+            # 7th semester
+            {'name': 'Major Elective 5',        'credits': 10},
+            {'name': 'Major Elective 6',        'credits': 10},
+            {'name': 'Thesis + Viva',           'credits': 10},
+        ]
+    },
+
+    'Social Work': {
+        'start_date': '2024-02-10',
+        'credits':    180,
+        'modules': [
+            # semesters 1–2
+            {'name': 'Foundations of SW',        'credits': 10},
+            {'name': 'Social Work Law',          'credits': 10},
+            {'name': 'Society & Personality',    'credits': 10},
+            {'name': 'Research Methods',         'credits': 5},
+
+            # semesters 3–4
+            {'name': 'Advanced Concepts',        'credits': 10},
+            {'name': 'Interdisciplinary Cases',  'credits': 5},
+            {'name': 'Law II',                   'credits': 5},
+            {'name': 'Society II',               'credits': 5},
+            {'name': 'Economics II',             'credits': 5},
+            {'name': 'Methods & Concepts',       'credits': 10},
+            {'name': 'Org & Financing',          'credits': 5},
+
+            # semester 5
+            {'name': 'Practicum Prep',          'credits': 5},
+            {'name': 'Practicum',               'credits': 20},
+
+            # semesters 6–7
+            {'name': 'Diversity & Inclusion I', 'credits': 10},
+            {'name': 'Diversity & Inclusion II','credits': 10},
+            {'name': 'Generale Studies',        'credits': 5},
+            {'name': 'Advanced Seminar',        'credits': 20},
+            {'name': 'Project Work',            'credits': 5},
+            {'name': 'Bachelor Thesis',         'credits': 10},
         ]
     }
 }

@@ -1,21 +1,18 @@
 # start_all.py
 
-import threading
-import subprocess
-import sys
+import threading, subprocess, sys
 
-PYTHON = sys.executable
-
-modules = [
+PY = sys.executable
+MODULES = [
     "peregos.gui_peregos",
     "wyseflow.gui_wyseflow",
     "his.his_gui"
 ]
 
 threads = []
-for mod in modules:
-    cmd = [PYTHON, "-m", mod]
-    t = threading.Thread(target=subprocess.run, args=(cmd,))
+for m in MODULES:
+    cmd = [PY, "-m", m]
+    t = threading.Thread(target=subprocess.run, args=(cmd,), daemon=True)
     t.start()
     threads.append(t)
 
