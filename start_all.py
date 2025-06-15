@@ -2,15 +2,19 @@
 
 import threading
 import subprocess
+import sys
 
-services = [
-    ["python", "peregos/consumer_peregos.py"],
-    ["python", "wyseflow/consumer_wyseflow.py"],
-    ["python", "his/his_gui.py"]
+PYTHON = sys.executable
+
+modules = [
+    "peregos.gui_peregos",
+    "wyseflow.gui_wyseflow",
+    "his.his_gui"
 ]
 
 threads = []
-for cmd in services:
+for mod in modules:
+    cmd = [PYTHON, "-m", mod]
     t = threading.Thread(target=subprocess.run, args=(cmd,))
     t.start()
     threads.append(t)

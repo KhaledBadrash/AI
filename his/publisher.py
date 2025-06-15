@@ -1,9 +1,12 @@
+# his/publisher.py
 
 import json
 import pika
-from config import (
-    RABBITMQ_HOST, EXCHANGE_NAME,
-    ROUTING_KEY_PEREGOS, ROUTING_KEY_WYSEFLOW,
+from his.config import (
+    RABBITMQ_HOST,
+    EXCHANGE_NAME,
+    ROUTING_KEY_PEREGOS,
+    ROUTING_KEY_WYSEFLOW,
     HARD_CODED_PROGRAMS
 )
 from utils.validation import validate_program, validate_id
