@@ -1,6 +1,7 @@
 # wyseflow/consumer_wyseflow.py
 
-import pika, json
+import pika
+import json
 from his.config import RABBITMQ_HOST, EXCHANGE_NAME, ROUTING_KEY_WYSEFLOW
 
 def callback(ch, method, props, body):
@@ -11,7 +12,8 @@ def main():
     conn = pika.BlockingConnection(pika.ConnectionParameters(RABBITMQ_HOST))
     ch   = conn.channel()
     ch.exchange_declare(exchange=EXCHANGE_NAME, exchange_type='direct')
-    q    = ch.queue_declare(queue='', exclusive=True).method.queue
+
+    q = ch.queue_declare(queue='', exclusive=True).method.queue
     ch.queue_bind(exchange=EXCHANGE_NAME, queue=q, routing_key=ROUTING_KEY_WYSEFLOW)
 
     print("WyseFlow waiting for messages…")

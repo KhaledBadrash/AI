@@ -1,10 +1,14 @@
 # start_all.py
 
-import threading, subprocess, sys
+import threading
+import subprocess
+import sys
 
 PY = sys.executable
 MODULES = [
+    "peregos.consumer_peregos",
     "peregos.gui_peregos",
+    "wyseflow.consumer_wyseflow",
     "wyseflow.gui_wyseflow",
     "his.his_gui"
 ]

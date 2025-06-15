@@ -1,6 +1,7 @@
-# peregos/consumer_pereg os.py
+# peregos/consumer_peregos.py
 
-import pika, json
+import pika
+import json
 from his.config import RABBITMQ_HOST, EXCHANGE_NAME, ROUTING_KEY_PEREGOS
 
 def callback(ch, method, props, body):

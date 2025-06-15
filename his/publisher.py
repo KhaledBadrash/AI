@@ -3,46 +3,50 @@
 import json
 import pika
 from his.config import (
-    RABBITMQ_HOST, EXCHANGE_NAME,
-    ROUTING_KEY_PEREGOS, ROUTING_KEY_WYSEFLOW
+    RABBITMQ_HOST,
+    EXCHANGE_NAME,
+    ROUTING_KEY_PEREGOS,
+    ROUTING_KEY_WYSEFLOW,
+    HARD_CODED_PROGRAMS
 )
 
-def send_student_data(name: str, student_id: str,
-                      program: str, modules: list):
+def send_student_data(
+    name: str,
+    student_id: str,
+    program: str
+):
     """
-    Publish two messages:
-      1) to Peregos: name, id, program, modules
-      2) to WyseFlow: includes start_date & total_credits
+    1) Peregos: name, id, program, total_credits
+    2) WyseFlow: name, id, program, start_date, total_credits
     """
-    conn = pika.BlockingConnection(pika.ConnectionParameters(RABBITMQ_HOST))
-    ch   = conn.channel()
-    ch.exchange_declare(exchange=EXCHANGE_NAME, exchange_type='direct')
+    details = HARD_CODED_PROGRAMS.get(program, {})
+    total_credits = details.get('credits', 0)
+    start_date    = details.get('start_date', '')
 
     base = {
-        "name": name,
-        "id":   student_id,
-        "program": program,
-        "modules": modules
+        "name":          name,
+        "id":            student_id,
+        "program":       program,
+        "total_credits": total_credits
     }
 
-    # Peregos
-    ch.basic_publish(
-        exchange=EXCHANGE_NAME,
-        routing_key=ROUTING_KEY_PEREGOS,
-        body=json.dumps(base)
+    conn    = pika.BlockingConnection(pika.ConnectionParameters(RABBITMQ_HOST))
+    channel = conn.channel()
+    channel.exchange_declare(exchange=EXCHANGE_NAME, exchange_type='direct')
+
+    # 1) Peregos
+    channel.basic_publish(
+        exchange    = EXCHANGE_NAME,
+        routing_key = ROUTING_KEY_PEREGOS,
+        body        = json.dumps(base)
     )
 
-    # WyseFlow
-    from his.config import HARD_CODED_PROGRAMS
-    details = HARD_CODED_PROGRAMS[program]
-    wf = dict(base)
-    wf["start_date"]    = details["start_date"]
-    wf["total_credits"] = details["credits"]
-
-    ch.basic_publish(
-        exchange=EXCHANGE_NAME,
-        routing_key=ROUTING_KEY_WYSEFLOW,
-        body=json.dumps(wf)
+    # 2) WyseFlow
+    wf = dict(base, start_date=start_date)
+    channel.basic_publish(
+        exchange    = EXCHANGE_NAME,
+        routing_key = ROUTING_KEY_WYSEFLOW,
+        body        = json.dumps(wf)
     )
 
     conn.close()
