@@ -49,6 +49,18 @@ class HISGui(tk.Tk):
         sid  = self.entry_id.get().strip()
         prog = self.cb_program.get().strip()
 
+
+        if re.search(r"[ÄäÖöÜüß]", name):
+            messagebox.showerror(
+                "Error",
+                "Please replace German umlauts:\n"
+                "ä -> ae, ö -> oe, ü -> ue\n"
+                "Ä -> Ae, Ö -> Oe, Ü -> Ue\n"
+                "ß -> ss"
+            )
+            return
+        
+        
         # Name must be non-empty and only letters/spaces
         if not name:
             messagebox.showerror("Error", "Name cannot be empty.")

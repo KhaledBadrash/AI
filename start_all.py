@@ -22,3 +22,7 @@ for m in MODULES:
 
 for t in threads:
     t.join()
+#Set-ExecutionPolicy RemoteSigned -Scope Process -Force
+#>> .\.venv\Scripts\Activate.ps1
+
+#
