@@ -1,3 +1,5 @@
+# peregos/gui_peregos.py
+
 import threading
 import json
 import pika
@@ -8,21 +10,36 @@ from his.config import RABBITMQ_HOST, EXCHANGE_NAME, ROUTING_KEY_PEREGOS
 
 class PeregosGUI:
     def __init__(self):
-        self.root = tk.Tk()
-        self.root.title("Peregos – Messages")
-        self.log  = ScrolledText(self.root, width=80, height=20, state='disabled')
+        # Steuer-Fenster
+        self.control = tk.Tk()
+        self.control.title("Peregos GUI")
+        # „X“ bindet auf dieselbe Shutdown-Logik
+        self.control.protocol("WM_DELETE_WINDOW", self._on_shutdown)
+
+        # Log-Bereich direkt im Control-Fenster
+        self.log = ScrolledText(self.control, width=80, height=20, state='disabled')
         self.log.pack(fill='both', expand=True, padx=5, pady=5)
 
-        threading.Thread(target=self.consume, daemon=True).start()
-        self.root.mainloop()
+        # Shutdown-Button
+        btn = tk.Button(self.control, text="Shutdown", command=self._on_shutdown)
+        btn.pack(side='bottom', pady=5)
 
-    def consume(self):
+        # Consumer-Thread starten
+        threading.Thread(target=self._consume, daemon=True).start()
+
+    def _on_shutdown(self):
+        # Fenster sofort schließen
+        self.control.destroy()
+
+    def _consume(self):
         try:
             conn = pika.BlockingConnection(pika.ConnectionParameters(RABBITMQ_HOST))
         except pika.exceptions.AMQPConnectionError as e:
-            self.root.after(0, lambda: messagebox.showerror(
-                "Connection Error", f"Could not connect to RabbitMQ:\n{e}"
-            ))
+            messagebox.showerror(
+                title="Connection Error",
+                message=f"Could not connect to RabbitMQ:\n{e}",
+                parent=self.control
+            )
             return
 
         ch = conn.channel()
@@ -35,28 +52,50 @@ class PeregosGUI:
             try:
                 msg = json.loads(body)
             except json.JSONDecodeError:
-                # skip malformed message
                 continue
 
-            self.root.after(0, self._append, msg)
+            # Beispiel-Check: total_credits > 0
+            if msg.get('total_credits', 0) <= 0:
+                self.control.after(0, lambda:
+                    messagebox.showwarning(
+                        title="Data Error",
+                        message="Invalid total_credits in message",
+                        parent=self.control
+                    )
+                )
+                continue
+
+            self.control.after(0, self._append, msg)
 
     def _append(self, msg: dict):
-        try:
-            lines = ["--- Peregos Received ---"]
-            lines.append(f"{'Name':12s}: {msg['name']}")
-            lines.append(f"{'Student ID':12s}: {msg['id']}")
-            lines.append(f"{'Program':12s}: {msg['program']}")
-            text = "\n".join(lines) + "\n\n"
-        except KeyError as e:
-            messagebox.showwarning(
-                "Data Error", f"Missing expected field: {e}"
-            )
-            return
+        lines = [
+            "--- Peregos Received ---",
+            f"{'Name':12s}: {msg.get('name','<missing>')}",
+            f"{'Student ID':12s}: {msg.get('id','<missing>')}",
+            f"{'Program':12s}: {msg.get('program','<missing>')}"
+        ]
+        text = "\n".join(lines) + "\n\n"
 
-        self.log.config(state="normal")
+        self.log.config(state='normal')
         self.log.insert(tk.END, text)
         self.log.yview(tk.END)
-        self.log.config(state="disabled")
+        self.log.config(state='disabled')
+
+def main():
+    while True:
+        gui = PeregosGUI()
+        gui.control.mainloop()
+
+        # erst nach Schließen den Restart-Dialog zeigen
+        root = tk.Tk()
+        root.withdraw()
+        restart = messagebox.askyesno(
+            title="Restart Peregos?",
+            message="Peregos GUI wurde geschlossen.\nMöchten Sie es neu starten?"
+        )
+        root.destroy()
+        if not restart:
+            break
 
 if __name__ == "__main__":
-    PeregosGUI()
+    main()
