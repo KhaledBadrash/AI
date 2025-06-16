@@ -1,5 +1,3 @@
-# peregos/gui_peregos.py
-
 import threading
 import json
 import pika
@@ -13,6 +11,8 @@ class PeregosGUI:
         # Steuer-Fenster
         self.control = tk.Tk()
         self.control.title("Peregos GUI")
+        # Stop-Flag für den Consumer-Thread
+        self._stop_event = threading.Event()
         # „X“ bindet auf dieselbe Shutdown-Logik
         self.control.protocol("WM_DELETE_WINDOW", self._on_shutdown)
 
@@ -24,16 +24,29 @@ class PeregosGUI:
         btn = tk.Button(self.control, text="Shutdown", command=self._on_shutdown)
         btn.pack(side='bottom', pady=5)
 
-        # Consumer-Thread starten
-        threading.Thread(target=self._consume, daemon=True).start()
+        # Consumer-Thread in den Event-Loop hinein planen,
+        # damit after() legal aufgerufen werden kann:
+        self.control.after(
+            0,
+            lambda: threading.Thread(target=self._consume, daemon=True).start()
+        )
 
     def _on_shutdown(self):
-        # Fenster sofort schließen
+        # 1) Consumer-Thread signalisieren, abzubrechen
+        self._stop_event.set()
+        # 2) RabbitMQ-Verbindung sauber schließen, falls noch offen
+        try:
+            if hasattr(self, 'connection') and self.connection.is_open:
+                self.connection.close()
+        except Exception:
+            pass
+        # 3) Fenster zerstören
         self.control.destroy()
 
     def _consume(self):
         try:
             conn = pika.BlockingConnection(pika.ConnectionParameters(RABBITMQ_HOST))
+            self.connection = conn
         except pika.exceptions.AMQPConnectionError as e:
             messagebox.showerror(
                 title="Connection Error",
@@ -44,11 +57,18 @@ class PeregosGUI:
 
         ch = conn.channel()
         ch.exchange_declare(exchange=EXCHANGE_NAME, exchange_type='direct')
-
         q = ch.queue_declare(queue='', exclusive=True).method.queue
         ch.queue_bind(exchange=EXCHANGE_NAME, queue=q, routing_key=ROUTING_KEY_PEREGOS)
 
-        for _, _, body in ch.consume(q, auto_ack=True):
+        # Mit inactivity_timeout, um regelmäßig das Stop-Flag prüfen zu können
+        for method_frame, properties, body in ch.consume(q, auto_ack=True, inactivity_timeout=1):
+            # Shutdown angefordert?
+            if self._stop_event.is_set():
+                break
+            # Leerlauf-Timeout überspringen
+            if body is None:
+                continue
+
             try:
                 msg = json.loads(body)
             except json.JSONDecodeError:
@@ -65,7 +85,11 @@ class PeregosGUI:
                 )
                 continue
 
-            self.control.after(0, self._append, msg)
+            # Append im Try-Block, um nach destroy() sauber abbrechen zu können
+            try:
+                self.control.after(0, self._append, msg)
+            except RuntimeError:
+                break
 
     def _append(self, msg: dict):
         lines = [
