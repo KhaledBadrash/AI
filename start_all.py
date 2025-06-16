@@ -26,3 +26,7 @@ for t in threads:
 #>> .\.venv\Scripts\Activate.ps1
 
 #
+#Set-ExecutionPolicy RemoteSigned -Scope Process -Force
+#>> .\.venv\Scripts\Activate.ps1
+
+#
